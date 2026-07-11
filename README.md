@@ -27,8 +27,10 @@ the fix.
 | **Rejection sampling** (`randint`/`randrange`) handled exactly | ❌ | ✅ via seed recovery + real-generator replay |
 | **Higher-level call modelling** (`random()`, `randint`, …) | ❌ | ✅ |
 | **Backward** prediction (rewind prior outputs) | ❌ | ✅ |
-| Multi-family (LCG, Java `Random`) | ❌ | ✅ |
+| Multi-family: LCG, Java `Random` + `Math.random`, PHP `mt_rand`, V8 `Math.random` | ❌ | ✅ |
+| **Seed recovery** (small / Unix-time seeds) by replay | ❌ | ✅ |
 | **Detect** + **remediate** stages, risk-rated report | ❌ | ✅ |
+| Capture on-ramps (pcap, live endpoint) + optional Rust core | ❌ | ✅ |
 | Embedded/OT randomness-audit framing | ❌ | ✅ |
 
 The Z3 partial-output solver is the headline: instead of needing 624 full
@@ -179,6 +181,12 @@ WEAK  — random                               | STRONG — secrets
 
 One stream leaks its future; the other gives deadpoint nothing. That difference
 is `secrets` / `os.urandom`.
+
+## Docs
+
+- [`docs/usage.md`](docs/usage.md) — full CLI/library reference, formats, minimum sample counts.
+- [`docs/case-study-ot-pairing-code.md`](docs/case-study-ot-pairing-code.md) — predicting an embedded device's "random" pairing code.
+- [`docs/case-study-session-token-prediction.md`](docs/case-study-session-token-prediction.md) — predicting web session tokens.
 
 ## Non-goals (design rules, not footnotes)
 
