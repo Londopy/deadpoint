@@ -1,8 +1,9 @@
 """Z3 partial-output recovery tests.
 
 These are the "beats randcrack" milestone (M3).  They are slower than the clean
-path, so the heavier ``random()`` case is marked ``slow``.  ``getrandbits(31)``
-is the cheapest reliable full-state recovery (~1300 words, a few seconds).
+path, so the heavier cases are marked ``slow``.  ``getrandbits(31)`` is the
+cheapest reliable full-state recovery (~1300 words, a few seconds) and stays in
+the fast suite.
 """
 
 import random
@@ -24,15 +25,22 @@ def test_partial_getrandbits31_forward():
     assert cr.predict(12) == future
 
 
-def test_partial_randint_power_of_two():
+@pytest.mark.slow
+def test_partial_randint_best_effort():
+    # randint/randrange go through randbelow, which uses REJECTION SAMPLING
+    # (getrandbits(width.bit_length()), rejecting draws >= width).  deadpoint
+    # models the no-rejection case, so recovery is best-effort — it works when no
+    # rejected draw fell in the observed window.  A large range makes rejection
+    # negligible (~2**-30 here).  recover() returns True only if the holdout
+    # verified, so a success is trustworthy.
     r = random.Random(7)
-    n = 1400
-    obs = [r.randint(0, 1023) for _ in range(n)]   # width 1024 = 2**10, no rejection
-    future = [r.randint(0, 1023) for _ in range(10)]
-    cr = MT19937Cracker(call="randint", lo=0, hi=1023)
+    n = 1700
+    hi = (1 << 30) - 2  # width 2**30 - 1, k = 30
+    obs = [r.randint(0, hi) for _ in range(n)]
+    future = [r.randint(0, hi) for _ in range(10)]
+    cr = MT19937Cracker(call="randint", lo=0, hi=hi)
     cr.feed(obs)
     assert cr.recover()
-    assert cr.verified
     assert cr.predict(10) == future
 
 

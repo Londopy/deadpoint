@@ -23,7 +23,7 @@ the fix.
 | Capability | `randcrack` | **deadpoint** |
 |---|---|---|
 | MT19937 from 624 clean `getrandbits(32)` | ✅ | ✅ |
-| **Partial / truncated outputs** via an SMT (Z3) model | ❌ | ✅ `random()`, `getrandbits(k<32)`, `randint` |
+| **Partial / truncated outputs** via an SMT (Z3) model | ❌ | ✅ `random()`, `getrandbits(k<32)`; `randint`/`randrange` best-effort |
 | **Higher-level call modelling** (`random()`, `randint`, …) | ❌ | ✅ |
 | **Backward** prediction (rewind prior outputs) | ❌ | ✅ |
 | Multi-family (LCG, Java `Random`) | ❌ | ✅ |
@@ -59,8 +59,12 @@ cr.predict(10)                    # next 10 outputs
 cr.rewind(5)                      # 5 PRIOR outputs
 
 # partial-output example: values came from random.randint(0, 999)
+# (randint/randrange go through randbelow's rejection sampling, so this is
+#  best-effort — recover() returns False cleanly if a reject fell in the window)
 cr = MT19937Cracker(call="randint", lo=0, hi=999)
-cr.feed(observed_ints); cr.recover(); cr.predict(3)
+cr.feed(observed_ints)
+if cr.recover():
+    cr.predict(3)
 
 fixes = harden(report)            # -> RemediateReport (mappings + patches)
 ```
@@ -89,9 +93,11 @@ deadpoint report device_dump.hex --fmt hex --out audit.txt
   block — MT discards 31 bits each twist).
 - **Partial path.** A Z3 model of the recurrence + tempering is constrained by
   the bits each call exposes (`random()` → 27+26 bits from two words;
-  `getrandbits(k)` → top *k* bits; `randint` → reduced to `getrandbits`), and
-  solved for the initial state. Every recovery is confirmed against a **holdout**
-  the solver never saw, so a reported success is a proven one.
+  `getrandbits(k)` → top *k* bits; `randint`/`randrange` → reduced to
+  `getrandbits`, best-effort because `randbelow` rejection-samples), and solved
+  for the initial state. Every recovery is confirmed against a **holdout** the
+  solver never saw, so a reported success is a proven one — and an unrecoverable
+  case (e.g. a rejection landed in the window) returns cleanly instead of lying.
 - **Seeds.** Small integer and Unix-time seeds are recovered by bounded brute
   force and confirmed by replay.
 
