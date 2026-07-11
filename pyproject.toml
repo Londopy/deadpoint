@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "deadpoint"
+version = "0.1.0"
+description = "Purple-team RNG analysis toolkit: detect weak PRNG usage, prove exploitability by recovering generator state, and report the correct CSPRNG remediation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "London" }]
+keywords = ["security", "prng", "mt19937", "cryptanalysis", "z3", "csprng", "purple-team", "randomness"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+]
+dependencies = [
+    "z3-solver>=4.12",
+    "numpy>=1.23",
+]
+
+[project.optional-dependencies]
+remediate = ["cryptography>=41"]
+pretty = ["rich>=13"]
+dev = [
+    "pytest>=7",
+    "hypothesis>=6",
+    "ruff",
+    "mypy",
+    "cryptography>=41",
+]
+all = ["cryptography>=41", "rich>=13"]
+
+[project.scripts]
+deadpoint = "deadpoint.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/londopy/deadpoint"
+Repository = "https://github.com/londopy/deadpoint"
+
+[tool.hatch.build.targets.wheel]
+packages = ["deadpoint"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "slow: heavier Z3 recoveries (deselect with '-m \"not slow\"')",
+]
