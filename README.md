@@ -23,7 +23,8 @@ the fix.
 | Capability | `randcrack` | **deadpoint** |
 |---|---|---|
 | MT19937 from 624 clean `getrandbits(32)` | ✅ | ✅ |
-| **Partial / truncated outputs** via an SMT (Z3) model | ❌ | ✅ `random()`, `getrandbits(k<32)`; `randint`/`randrange` best-effort |
+| **Partial / truncated outputs** via an SMT (Z3) model | ❌ | ✅ `random()`, `getrandbits(k<32)`, `randint`/`randrange` |
+| **Rejection sampling** (`randint`/`randrange`) handled exactly | ❌ | ✅ via seed recovery + real-generator replay |
 | **Higher-level call modelling** (`random()`, `randint`, …) | ❌ | ✅ |
 | **Backward** prediction (rewind prior outputs) | ❌ | ✅ |
 | Multi-family (LCG, Java `Random`) | ❌ | ✅ |
@@ -59,11 +60,11 @@ cr.predict(10)                    # next 10 outputs
 cr.rewind(5)                      # 5 PRIOR outputs
 
 # partial-output example: values came from random.randint(0, 999)
-# (randint/randrange go through randbelow's rejection sampling, so this is
-#  best-effort — recover() returns False cleanly if a reject fell in the window)
+# randint/randrange use rejection sampling; deadpoint recovers a small/time seed
+# and replays the REAL generator, so rejection is handled exactly.
 cr = MT19937Cracker(call="randint", lo=0, hi=999)
 cr.feed(observed_ints)
-if cr.recover():
+if cr.recover():          # exact via seed replay, or best-effort state solve
     cr.predict(3)
 
 fixes = harden(report)            # -> RemediateReport (mappings + patches)
@@ -99,7 +100,10 @@ deadpoint report device_dump.hex --fmt hex --out audit.txt
   solver never saw, so a reported success is a proven one — and an unrecoverable
   case (e.g. a rejection landed in the window) returns cleanly instead of lying.
 - **Seeds.** Small integer and Unix-time seeds are recovered by bounded brute
-  force and confirmed by replay.
+  force and confirmed by replay. For call-modelled streams this runs *first*
+  (it's fast and exact): because it replays CPython's own generator, it handles
+  `randint`/`randrange` **rejection sampling** — the "subtle case" — exactly,
+  which the symbolic path only approximates.
 
 ## Additional generators (stretch)
 
@@ -133,6 +137,30 @@ Beyond CPython's `random`, deadpoint recovers three more real-world generators:
   from deadpoint.exploit import php
   cr = php.recover(raw_mt_rand_outputs)   # cr.predict(n) -> future mt_rand()
   ```
+
+## Capture on-ramps (pcap + live endpoints)
+
+Beyond files/stdin, deadpoint can pull a value stream straight from a capture or a
+running service (both feed the same detect/exploit pipeline):
+
+```python
+from deadpoint.pcap import extract_stream, offset_extractor
+from deadpoint.web import sample_endpoint, regex_extractor
+
+# Modbus transaction IDs at a fixed offset in each packet of a capture
+stream = extract_stream("cap.pcap", offset_extractor(offset=2, nbytes=2), width=16)
+
+# session tokens sampled live from an endpoint (fetch is injectable for testing)
+stream = sample_endpoint("https://app.test/login", 700,
+                         regex_extractor(r'"session":"([0-9a-f]+)"'), width=32)
+```
+
+## Native acceleration (optional)
+
+A Rust + PyO3 crate in `native/` provides a compiled `deadpoint_native` module
+(untempering + clean state solve).  `deadpoint` imports it automatically when
+built (`cd native && maturin develop --release`) and falls back to pure Python
+otherwise — identical results, just faster. See `native/README.md`.
 
 ## Diff-against-secrets demo
 

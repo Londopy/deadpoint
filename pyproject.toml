@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "deadpoint"
-version = "0.1.0"
+version = "0.2.0"
 description = "Purple-team RNG analysis toolkit: detect weak PRNG usage, prove exploitability by recovering generator state, and report the correct CSPRNG remediation."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "London" }]
+authors = [{ name = "Londopy" }]
 keywords = ["security", "prng", "mt19937", "cryptanalysis", "z3", "csprng", "purple-team", "randomness"]
 classifiers = [
     "Development Status :: 3 - Alpha",

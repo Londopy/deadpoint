@@ -1,0 +1,13 @@
+[package]
+name = "deadpoint-native"
+version = "0.1.0"
+edition = "2021"
+description = "Optional Rust acceleration for deadpoint (MT19937 untempering / state solve)."
+license = "MIT"
+
+[lib]
+name = "deadpoint_native"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.21", features = ["extension-module"] }
