@@ -159,10 +159,22 @@ stream = sample_endpoint("https://app.test/login", 700,
 
 ## Native acceleration (optional)
 
+**`pip install deadpoint` is pure Python** — the published wheel contains no
+compiled code and has no Rust dependency. The native accelerator is strictly
+opt-in.
+
 A Rust + PyO3 crate in `native/` provides a compiled `deadpoint_native` module
-(untempering + clean state solve).  `deadpoint` imports it automatically when
-built (`cd native && maturin develop --release`) and falls back to pure Python
-otherwise — identical results, just faster. See `native/README.md`.
+(untempering + clean state solve). To use it, build it yourself:
+
+```bash
+pip install maturin
+cd native && maturin develop --release
+```
+
+`deadpoint` then imports it automatically and falls back to pure Python when it's
+absent — **identical results either way**, just faster. Check which path is
+active with `python -c "from deadpoint.exploit import untemper as u; import importlib; print(importlib.import_module('deadpoint.exploit.untemper').NATIVE)"`.
+See `native/README.md`.
 
 ## Diff-against-secrets demo
 

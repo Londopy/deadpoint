@@ -23,7 +23,7 @@ from .remediate import harden
 from .exploit import MT19937Cracker
 from .report import build_report, format_text, exploit_stream
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 __all__ = [
     "ingest",
