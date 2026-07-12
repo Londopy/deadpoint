@@ -17,8 +17,7 @@ DETECT  ->  EXPLOIT  ->  REMEDIATE      (blue -> red -> blue)
 
 ## Demo
 
-<!-- Record with: asciinema rec, or the vhs script in docs/demo.tape (see below). -->
-![deadpoint predicting a target generator's next outputs](docs/demo.gif)
+![deadpoint predicting a target generator's next outputs](https://raw.githubusercontent.com/Londopy/deadpoint/main/docs/demo.gif)
 
 ```console
 $ deadpoint predict tokens.txt --fmt hex --width 32 --forward 5 --backward 3
