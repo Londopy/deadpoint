@@ -146,6 +146,22 @@ def cmd_demo(args) -> int:
     return 0
 
 
+def cmd_tui(args) -> int:
+    try:
+        from .tui import run_tui
+    except Exception as exc:  # pragma: no cover
+        print(f"TUI unavailable: {exc}")
+        return 2
+    try:
+        run_tui(source=args.input, fmt=args.fmt, width=args.width, endian=args.endian,
+                call=args.call, nbits=args.nbits, lo=args.lo, hi=args.hi,
+                forward=args.forward, backward=args.backward)
+    except RuntimeError as exc:
+        print(exc)
+        return 2
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="deadpoint",
@@ -190,6 +206,13 @@ def build_parser() -> argparse.ArgumentParser:
     dm.add_argument("--seed", type=int, default=None)
     dm.add_argument("--json", action="store_true")
     dm.set_defaults(func=cmd_demo)
+
+    tu = sub.add_parser("tui", help="interactive Textual dashboard (needs the [tui] extra)")
+    _add_common(tu)
+    _add_call(tu)
+    tu.add_argument("--forward", type=int, default=8)
+    tu.add_argument("--backward", type=int, default=5)
+    tu.set_defaults(func=cmd_tui)
     return p
 
 

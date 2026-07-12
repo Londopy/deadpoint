@@ -220,6 +220,21 @@ WEAK  — random                               | STRONG — secrets
 One stream leaks its future; the other gives deadpoint nothing. That difference
 is `secrets` / `os.urandom`.
 
+## Interactive TUI (optional)
+
+A Textual dashboard renders the whole pipeline live — detect verdict, exploit
+status, a forward/backward prediction table, and remediation — over any stream.
+It's an opt-in extra (a thin read-only view over the library; the core has no
+Textual dependency):
+
+```bash
+pip install "deadpoint[tui]"
+deadpoint tui tokens.txt --fmt hex --width 32
+```
+
+`q` quits, `r` re-runs. For anything scriptable, prefer the CLI/library — the TUI
+is for interactive exploration.
+
 ## Docs
 
 - [`docs/usage.md`](docs/usage.md) — full CLI/library reference, formats, minimum sample counts.

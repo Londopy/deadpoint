@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-07-11
+### Added
+- **Optional Textual TUI** (`pip install deadpoint[tui]`, `deadpoint tui <input>`):
+  an interactive detect → exploit → remediate dashboard with a live
+  forward/backward prediction table. A thin, read-only view over the library;
+  the core keeps no Textual dependency.
+- README badges (CI, PyPI, Python versions, license), a demo section with a
+  `vhs` tape (`docs/demo.tape`), and a `CHANGELOG.md`.
+### Changed
+- CI now runs `mypy` (type-checking); the project is mypy-clean.
+### Fixed
+- 12 type errors surfaced by mypy (notably a wrong CLI return annotation and
+  `int.from_bytes` endianness types).
+
 ## [0.2.3] — 2026-07-11
 ### Fixed
 - Detect stage: base the `STRONG` verdict on a stable min-entropy discriminator
@@ -47,7 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Java `Random` recovery, seed recovery, detect stage, remediate stage
   (CSPRNG mappings + vetted-library wrappers + patch codegen), CLI, reporting.
 
-[Unreleased]: https://github.com/Londopy/deadpoint/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/Londopy/deadpoint/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Londopy/deadpoint/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/Londopy/deadpoint/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/Londopy/deadpoint/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Londopy/deadpoint/compare/v0.2.0...v0.2.1
