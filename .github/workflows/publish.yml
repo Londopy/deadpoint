@@ -47,3 +47,5 @@ jobs:
 
       - name: Publish to PyPI (Trusted Publishing / OIDC)
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true   # re-runs are a no-op instead of a hard failure

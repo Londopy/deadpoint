@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "deadpoint"
-version = "0.3.0"
+version = "0.3.1"
 description = "Purple-team RNG analysis toolkit: detect weak PRNG usage, prove exploitability by recovering generator state, and report the correct CSPRNG remediation."
 readme = "README.md"
 requires-python = ">=3.10"

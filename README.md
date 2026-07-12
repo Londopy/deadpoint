@@ -21,18 +21,31 @@ DETECT  ->  EXPLOIT  ->  REMEDIATE      (blue -> red -> blue)
 
 ```console
 $ deadpoint predict tokens.txt --fmt hex --width 32 --forward 5 --backward 3
-forward (5): [3387135577, 2892245552, 2493570821, 1993304175, 274166927]
+forward (5): [3387135577, 2892245552, 2493570821, 1340861552, 807034130]
 backward (3): [2912693742, 3815118128, 1202786163]
 
-$ deadpoint report tokens.txt --fmt hex --forward 3
+$ deadpoint report tokens.txt --fmt hex --width 32 --forward 3 --backward 0
 ======================================================================
   DEADPOINT — RNG ANALYSIS REPORT
 ======================================================================
 Risk rating      : CRITICAL
-Verdict          : WEAK        Suspected family : MT19937
-State recovered  : True        Predictions verified on holdout: True
+Samples analysed : 700 (32-bit words)
+
+-- DETECT ------------------------------------------------------------
+Verdict          : WEAK
+Suspected family : MT19937
+Confidence       : 0.99
+Statistical tests: 5/5 passed (looks_random=True)
+
+-- EXPLOIT -----------------------------------------------------------
+State recovered  : True  (method: untemper + linear recurrence)
+Predictions verified on holdout: True
 Next outputs     : 3387135577, 2892245552, 2493570821
-[REMEDIATE] Replace random.getrandbits with secrets.token_hex / os.urandom
+
+-- REMEDIATE ---------------------------------------------------------
+[CRITICAL] Weak generator in use (MT19937)
+      fix: Replace the generator with secrets / os.urandom for any
+           security-relevant value (tokens, keys, nonces, IDs).
 ```
 
 Non-cryptographic PRNGs (Mersenne Twister / MT19937, LCGs, xorshift) are still
