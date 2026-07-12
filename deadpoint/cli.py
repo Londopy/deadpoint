@@ -13,11 +13,12 @@ import sys
 
 from .ingest import ingest
 from .detect import analyze
+from .model import NormalizedStream
 from .remediate import harden
 from .report import build_report, format_text, exploit_stream
 
 
-def _load(args) -> "object":
+def _load(args) -> NormalizedStream:
     return ingest(args.input, fmt=args.fmt, width=args.width, endian=args.endian)
 
 

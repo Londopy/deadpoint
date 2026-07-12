@@ -30,5 +30,8 @@ jobs:
       - name: Lint
         run: ruff check .
 
+      - name: Type-check
+        run: mypy deadpoint
+
       - name: Run tests (fast suite)
         run: pytest -m "not slow"

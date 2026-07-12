@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import math
 from collections import Counter
+from typing import Any
 
 
 def _bits(values: list[int], width: int) -> list[int]:
@@ -93,7 +94,7 @@ def entropy(values: list[int], width: int) -> dict:
     pmax = max(p1, 1 - p1)
     min_ent = -math.log2(pmax) if pmax > 0 else 0.0
     # byte-level Shannon for a fuller picture
-    byte_counts = Counter()
+    byte_counts: Counter[int] = Counter()
     for v in values:
         for i in range(0, width, 8):
             byte_counts[(v >> i) & 0xFF] += 1
@@ -110,7 +111,7 @@ def entropy(values: list[int], width: int) -> dict:
 
 def run_battery(values: list[int], width: int = 32) -> dict:
     bits = _bits(values, width)
-    results = {
+    results: dict[str, Any] = {
         "monobit": monobit(bits),
         "block_frequency": block_frequency(bits),
         "runs": runs(bits),

@@ -56,3 +56,10 @@ addopts = "-q"
 markers = [
     "slow: heavier Z3 recoveries (deselect with '-m \"not slow\"')",
 ]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true      # z3, numpy stubs are optional
+check_untyped_defs = true
+warn_unused_ignores = false
+exclude = ["tests/", "native/", "build/"]

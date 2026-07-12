@@ -13,7 +13,7 @@ No third-party dependency: the classic pcap container is parsed directly.
 from __future__ import annotations
 
 import struct
-from typing import Callable
+from typing import Callable, Literal
 
 from .model import NormalizedStream
 
@@ -54,7 +54,7 @@ def parse_pcap_bytes(data: bytes) -> list[bytes]:
 
 def offset_extractor(offset: int, nbytes: int, endian: str = "big") -> Callable:
     """Extract a ``nbytes``-wide integer at a fixed byte ``offset`` in each record."""
-    order = "little" if endian == "little" else "big"
+    order: Literal["little", "big"] = "little" if endian == "little" else "big"
 
     def _extract(pkt: bytes) -> int | None:
         if len(pkt) < offset + nbytes:

@@ -1,5 +1,10 @@
 # deadpoint
 
+[![CI](https://github.com/Londopy/deadpoint/actions/workflows/ci.yml/badge.svg)](https://github.com/Londopy/deadpoint/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/deadpoint.svg)](https://pypi.org/project/deadpoint/)
+[![Python](https://img.shields.io/pypi/pyversions/deadpoint.svg)](https://pypi.org/project/deadpoint/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **A purple-team RNG analysis toolkit.** Point it at a stream of "random" values
 from software or an embedded/OT device and it will tell you whether that
 randomness is predictable, **prove it** by recovering the generator's internal
@@ -8,6 +13,27 @@ code should have used instead.
 
 ```
 DETECT  ->  EXPLOIT  ->  REMEDIATE      (blue -> red -> blue)
+```
+
+## Demo
+
+<!-- Record with: asciinema rec, or the vhs script in docs/demo.tape (see below). -->
+![deadpoint predicting a target generator's next outputs](docs/demo.gif)
+
+```console
+$ deadpoint predict tokens.txt --fmt hex --width 32 --forward 5 --backward 3
+forward (5): [3387135577, 2892245552, 2493570821, 1993304175, 274166927]
+backward (3): [2912693742, 3815118128, 1202786163]
+
+$ deadpoint report tokens.txt --fmt hex --forward 3
+======================================================================
+  DEADPOINT — RNG ANALYSIS REPORT
+======================================================================
+Risk rating      : CRITICAL
+Verdict          : WEAK        Suspected family : MT19937
+State recovered  : True        Predictions verified on holdout: True
+Next outputs     : 3387135577, 2892245552, 2493570821
+[REMEDIATE] Replace random.getrandbits with secrets.token_hex / os.urandom
 ```
 
 Non-cryptographic PRNGs (Mersenne Twister / MT19937, LCGs, xorshift) are still

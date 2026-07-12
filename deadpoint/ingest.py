@@ -11,7 +11,7 @@ from __future__ import annotations
 import base64
 import re
 import sys
-from typing import Iterable
+from typing import Iterable, Literal
 
 from .model import NormalizedStream
 
@@ -22,7 +22,7 @@ def _bytes_to_words(data: bytes, width: int, endian: str) -> list[int]:
     nbytes = width // 8
     if len(data) % nbytes:
         data = data[: len(data) - (len(data) % nbytes)]
-    order = "little" if endian == "little" else "big"
+    order: Literal["little", "big"] = "little" if endian == "little" else "big"
     return [int.from_bytes(data[i : i + nbytes], order) for i in range(0, len(data), nbytes)]
 
 
